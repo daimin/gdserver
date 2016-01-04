@@ -10,7 +10,7 @@ MD5_SALT = 'oDGDHIuytjEnT7Tl'
 
 MYSQL_CONFIG = {
     'host' : '127.0.0.1',
-    'port' : 3360,
+    'port' : 3306,
     'user' : 'root',
     'passwd' : '123',
     'db' : 'chat_demo',
@@ -18,3 +18,4 @@ MYSQL_CONFIG = {
 
 
 
+DAEMON = False  # 标记是否以daemon运行

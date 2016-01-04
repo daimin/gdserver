@@ -11,6 +11,7 @@ import select
 import comm
 import protocol
 import time
+import json
 
 try:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -59,6 +60,8 @@ def you_recv(s):
                         print 'Version wrong!!'
                     elif protocol.S2C_HEARTBEAT.eq(type_):
                         print 'heartbeating ...'
+                    elif protocol.S2C_LOGIN.eq(type_):
+                        print 'S2C_LOGIN ...'
 
 
                     # print "type = %s, content=%s" % (type_, content_reply)
@@ -66,8 +69,8 @@ def you_recv(s):
             else:
                 msg = rr.readline()
                 protocol.C2S_VERSION.data = '0.0.1'
-                p = comm.copy_protocol('C2S_VERSION')
-                p.set_data('0.0.1')
+                p = comm.copy_protocol('C2S_LOGIN')
+                p.set_data(json.dumps({'name': 'daimin2', 'passwd': '123'}))
                 s.sendall(comm.pack_data(p.type_, p.data))
         gevent.sleep(0)
 

@@ -27,6 +27,7 @@ from __future__ import absolute_import, division, with_statement
 import copy
 import itertools
 import os
+import time
 
 try:
     import MySQLdb.constants

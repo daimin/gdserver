@@ -14,6 +14,7 @@ from binascii import b2a_hex, a2b_hex
 import conf
 import copy
 import hashlib
+import logging
 
 def pack_data(type_, data):
     data = str(data)
@@ -94,7 +95,7 @@ def to_str(s):
     return s
 
 def md5(src, t='lower'):
-    src = "{}-{}" % (conf.MD5_SALT, src)
+    src = "{}-{}".format(conf.MD5_SALT, src)
     if t is 'lower':
         return hashlib.md5(src).hexdigest().lower()
     else:

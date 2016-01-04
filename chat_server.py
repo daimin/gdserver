@@ -6,10 +6,11 @@ __author__ = 'daimin'
 
 import server_gevt
 import comm
-import protocol
 import conf
 import daemon
 import time
+import json
+import user
 
 
 class ChatServer(server_gevt.JBServer):
@@ -60,14 +61,23 @@ class ChatHandler(object):
         p.set_data(int(time.time()))
         self.send_message(p)
 
-
+    def handle_C2S_LOGIN(self, message):
+        print('handle_C2S_LOGIN=========' + message)
+        uobj = json.loads(message)
+        if uobj:
+            u = user.User(**uobj)
+            ret = u.save()
+            if ret:
+                p = comm.copy_protocol('S2C_LOGIN')
+                p.set_data(ret)
+                self.send_message(p)
 
 
 if __name__ == '__main__':
     
     config = {'daemon': 'start', 'pid-file': '/tmp/chat-server.pid', 'log-file':'log.log', 'user': 'daimin'}
-
-    daemon.daemon_exec(config)
-    daemon.set_user(config.get('user', None))
+    if conf.DAEMON:
+        daemon.daemon_exec(config)
+        daemon.set_user(config.get('user', None))
     ChatServer().runserver(config.get('host', '0.0.0.0'), config.get('port', 5005))
 
