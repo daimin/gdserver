@@ -10,22 +10,25 @@ import message
 import msgpack
 import random
 from Crypto.Cipher import AES
-from binascii import b2a_hex, a2b_hex
+from binascii import hexlify, unhexlify
 import conf
 import copy
 import hashlib
 import logging
+import base64
+import zlib
 
 def pack_data(type_, data):
     data = str(data)
-    data = msgpack_pack(aes_encode(conf.AES_KEY, data))
+    data = aes_encode(conf.AES_KEY, data)
+    print("data.len = %d" % len(data))
     return struct.pack("!HH", type_, len(data)) + data
 
 def struct_unpack(data):
     return struct.unpack_from("!HH", data[:4])
 
 def unpack_data(data):
-        return aes_decode(conf.AES_KEY, msgpack_unpack(data))
+    return aes_decode(conf.AES_KEY, data)
 
 
 def msgpack_pack(data):
@@ -35,24 +38,33 @@ def msgpack_pack(data):
 def msgpack_unpack(data):
     return msgpack.unpackb(data)
 
-def aes_encode(key, data):
-    obj = AES.new(key, AES.MODE_CBC, b'0000000000000000')
-    length = 16
-    count = len(data)
-    if count < length:
-        add = (length-count)
-        #\0 backspace
-        data = data + ('\0' * add)
-    elif count > length:
-        add = (length-(count % length))
-        data = data + ('\0' * add)
+"""
+AES加密解密，支持AES/CBC/PKCS5Padding =======================================
+"""
+BS = 16
+pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
+unpad = lambda s : s[0:-ord(s[-1])]
 
-    return b2a_hex(obj.encrypt(data))
+def aes_encode(key, data):
+    cryptor = AES.new(key, AES.MODE_CBC, "\0" * 16)
+    # print(len(data))
+    # print(len(data))
+
+    data = pad(data)
+    senddata = base64.encodestring(cryptor.encrypt(data))
+
+    return zlib.compress(senddata, 9)
+
 
 def aes_decode(key, data):
-    cryptor = AES.new(key, AES.MODE_CBC, b'0000000000000000')
-    plain_text  = cryptor.decrypt(a2b_hex(data))
-    return plain_text.rstrip('\0')
+    data = base64.decodestring(zlib.decompress(data))
+    cryptor = AES.new(key, AES.MODE_CBC, "\0" * 16)
+    
+    plain_text  = unpad(cryptor.decrypt(data))
+    return plain_text.rstrip("\0")
+"""
+==============================================================================
+"""
 
 def create_nonce_str(length=16):
     chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -72,13 +84,6 @@ def get_protocols():
             protos[m.type_] = m
 
     return protos
-
-
-def copy_protocol(name):
-    m = getattr(protocol, name)
-    if isinstance(m, message.Message):
-        return copy.deepcopy(m)
-    return None
 
 
 def to_bytes(s):
@@ -112,10 +117,19 @@ def print_exception(e):
 
 
 if __name__ == '__main__':
-    etext = aes_encode(conf.AES_KEY, """密码学中又称Rijndael加密法，是美国联邦政府采用的一种区块加密标准。这个标准用来替代原先的DES，已经被多方分析且广为全世界所使用。经过五年的甄选流程，高级加密标准由美国国家标准与技术研究院（NIST）于2001年11月26日发布于FIPS PUB 197，并在2002年5月26日成为有效的标准。2006年，高级加密标准已然成为对称密钥加密中最流行的算法之一。
-    AES只是个基本算法，实现AES有若干模式。其中的CBC模式因为其安全性而被TLS（就
-    是https的加密标准）和IPSec（win采用的）作为技术标准。简单地说，CBC使用密码和salt
-    （起扰乱作用）按固定算法（md5）产生key和iv。然后用key和iv（初始向量'""")
-    
-    print(etext)
-    print(aes_decode(conf.AES_KEY, etext))
+    s = "hello"
+    # print(len(s))
+    # etext = aes_encode(conf.AES_KEY, s)
+    # print(etext)
+    # print(len(etext))
+    # s = pad('11122222222ddddddddddd22ddddddddddddddddd22')
+    # print(len(s))
+    # print(base64.encodestring(zlib.compress('hello', 9)))
+
+    # print(zlib.decompress(base64.decodestring('eNrLSM3JyQcABiwCFQ==')))
+    # d = base64.encodestring(s)
+    # print(d)
+
+    # print(etext)
+    # print(aes_decode(conf.AES_KEY, etext))
+    # print(aes_decode(conf.AES_KEY, aes_decode(conf.AES_KEY, 'jUIfDF/CrdLF0kEsf/D49UNkOSnKaSaJxXJyeaSisvM=')))

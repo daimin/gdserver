@@ -9,6 +9,7 @@ class Message(object):
     type_ = 0
     len_ = 0
     data = ''
+    self_data = ''
     label = ''
 
     def __init__(self, type_, **kwargs):
@@ -19,8 +20,9 @@ class Message(object):
     def eq(self, type_):
         return type_ == self.type_
 
-    def set_data(self, data):
+    def set_data(self, data, self_data=''):
         self.data = data
+        self.self_data = self_data
 
 
 

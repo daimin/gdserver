@@ -1,31 +1,40 @@
 #coding:utf-8
-
 from __future__ import absolute_import, division, print_function, \
     with_statement
-__author__ = 'daimin'
-
 import server_gevt
 import comm
 import conf
 import daemon
+import protocol
 import time
 import json
 import user
 
+__author__ = 'daimin'
+
 
 class ChatServer(server_gevt.JBServer):
+
+    _handlers = {}
 
     def __init__(self):
         super(ChatServer, self).__init__()
         self.protos = comm.get_protocols()
 
+    def register_handlers(self, sock):
+        self._handlers[protocol.DEFAULT] = ChatHandler(self, sock)
+        self._handlers[protocol.VERSION] = VersionHandler(self, sock)
+        self._handlers[protocol.HEARTBEAT] = HeartbeatHandler(self, sock)
+        self._handlers[protocol.LOGIN] = LoginHandler(self, sock)
+        self._handlers[protocol.SEND_CONT] = SendContHandler(self, sock)
+
     def send_message(self, sock, msg):
-        super(ChatServer, self).send_message(sock, msg.type_, msg.data)
-    
+        super(ChatServer, self).do_send_message(sock, msg.type_, msg.data, msg.self_data)
+
     def on_message(self, sock, type_, message):
-        hander = ChatHandler.get_instance(self, sock)
         message = message.strip()
-        getattr(hander, 'handle_%s' % self.protos.get(type_, 'ERR_NO_SUPPORT').label)(message)
+        handler = self._handlers.get(type_, self._handlers[protocol.DEFAULT])
+        handler.request(message)
 
 
 class ChatHandler(object):
@@ -33,11 +42,15 @@ class ChatHandler(object):
     _instances = {}
 
     def __init__(self, server, sock):
+        self._server = ChatServer()
         self._sock = sock
-        self._server = server
+        self._proto = protocol.DEFAULT
 
     def send_message(self, message):
-        self._server.send_message(self._sock, message)
+        self._server.do_send_message(self._sock, message)
+
+    def request(self, message):
+        pass
 
     @staticmethod
     def get_instance(server, sock):
@@ -45,33 +58,30 @@ class ChatHandler(object):
             ChatHandler._instances[sock]  = ChatHandler(server, sock)
         return ChatHandler._instances[sock]
 
-    def handle_ERR_NO_SUPPORT(self, type_, message):
-        self.send_message(comm.copy_protocol('ERR_NO_SUPPORT'))
 
-    def handle_C2S_VERSION(self, message):
-        print('handle_C2S_VERSION=========' + message)
-        if message == conf.VERSION:
-            self.send_message(comm.copy_protocol('S2C_VERSION'))
-        else:
-            self.send_message(comm.copy_protocol('ERR_VERSION'))
+class VersionHandler(ChatHandler):
 
-    def handle_C2S_HEARTBEAT(self, message):
-        print('handle_C2S_HEARTBEAT=========' + message)
-        p = comm.copy_protocol('S2C_HEARTBEAT')
-        p.set_data(int(time.time()))
-        self.send_message(p)
+    def request(self, message):
+        self.send_message(conf.VERSION)
 
-    def handle_C2S_LOGIN(self, message):
-        print('handle_C2S_LOGIN=========' + message)
+
+class HeartbeatHandler(ChatHandler):
+    def request(self, message):
+        self.send_message(int(time.time()))
+
+
+class LoginHandler(ChatHandler):
+    def request(self, message):
         uobj = json.loads(message)
         if uobj:
             u = user.User(**uobj)
             ret = u.save()
-            if ret:
-                p = comm.copy_protocol('S2C_LOGIN')
-                p.set_data(ret)
-                self.send_message(p)
+            self.send_message(ret)
 
+
+class SendContHandler(ChatHandler):
+    def request(self, message):
+        self.send_message("Me: " + message + "From: " + str(self._sock.getpeername()) + " ==> " + message)
 
 if __name__ == '__main__':
     

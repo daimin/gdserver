@@ -34,7 +34,6 @@ def you_input(s):
         s.sendall(x)
         gevent.sleep(0)
 
-
 def you_recv(s):
     while 1:
         if int(time.time()) % 10 == 0:

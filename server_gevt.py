@@ -1,19 +1,17 @@
-#coding:utf-8
+# coding:utf-8
 from __future__ import absolute_import, division, print_function, \
     with_statement
-
+from gevent.server import StreamServer
+import comm
+import signal
+import gevent
 
 __author__ = 'daimin'
-
-from gevent.server import StreamServer
-import gevent
-import signal
-import comm
-
 
 class JBServer(object):
 
     client_list = []
+    handler_list = []
 
     def __init__(self):
         pass
@@ -22,6 +20,9 @@ class JBServer(object):
         pass
 
     def mainloop(self, socket_, address):
+        if socket_ not in JBServer.client_list:
+            self.client_list.append(socket_)
+
         while 1:
             header_data = socket_.recv(4)
             if header_data:
@@ -33,10 +34,17 @@ class JBServer(object):
             else:
                 break
         print('Client %s disconnected.' % (str(address), ))
+        # 从客户socket列表中关闭并删除掉已经断开的socket
         socket_.close()
+        JBServer.client_list.remove(socket_)
 
-    def send_message(self, sock, type_, message):
-        sock.sendall(comm.pack_data(type_, message))
+    def do_send_message(self, sock, type_, message, self_message=''):
+        for client_sock in JBServer.client_list:
+            if client_sock is not sock:
+                client_sock.sendall(comm.pack_data(type_, self_message))
+            else:
+                print("send_message = " + message)
+                client_sock.sendall(comm.pack_data(type_, message))
 
     def runserver(self, host, port): 
         server = StreamServer((host, port), self.mainloop)
