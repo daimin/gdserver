@@ -22,14 +22,14 @@ class ChatServer(server_gevt.JBServer):
         self.protos = comm.get_protocols()
 
     def register_handlers(self, sock):
-        self._handlers[protocol.DEFAULT] = ChatHandler(self, sock)
+        self._handlers[protocol.DEFAULT] = Handler(self, sock)
         self._handlers[protocol.VERSION] = VersionHandler(self, sock)
         self._handlers[protocol.HEARTBEAT] = HeartbeatHandler(self, sock)
         self._handlers[protocol.LOGIN] = LoginHandler(self, sock)
         self._handlers[protocol.SEND_CONT] = SendContHandler(self, sock)
 
     def send_message(self, sock, msg):
-        super(ChatServer, self).do_send_message(sock, msg.type_, msg.data, msg.self_data)
+        super(ChatServer, self).do_send_message(sock, msg.type_, msg.data, msg.echo)
 
     def on_message(self, sock, type_, message):
         message = message.strip()
@@ -37,7 +37,7 @@ class ChatServer(server_gevt.JBServer):
         handler.request(message)
 
 
-class ChatHandler(object):
+class Handler(object):
     
     _instances = {}
 
@@ -52,34 +52,46 @@ class ChatHandler(object):
     def request(self, message):
         pass
 
+    def _obtain_s2c_msg(type_, val, echo=None):
+        s2c_msg = protocol.get_S2C_proto(message.type_)
+        s2c_msg.set_data(val)
+        if echo is not None:
+            s2c_msg.set_echo(echo)
+        return s2c_msg
+
     @staticmethod
     def get_instance(server, sock):
-        if sock not in ChatHandler._instances:
-            ChatHandler._instances[sock]  = ChatHandler(server, sock)
-        return ChatHandler._instances[sock]
+        if sock not in Handler._instances:
+            Handler._instances[sock]  = Handler(server, sock)
+        return Handler._instances[sock]
 
 
-class VersionHandler(ChatHandler):
+class VersionHandler(Handler):
 
     def request(self, message):
-        self.send_message(conf.VERSION)
+        if message.data == conf.VERSION:
+            return self.send_message(protocol.OK)    # 发送处理OK
+        else:
+            return self.send_message(protocol.ERR_VERSION) #发送错误的版本
 
 
-class HeartbeatHandler(ChatHandler):
+
+class HeartbeatHandler(Handler):
     def request(self, message):
-        self.send_message(int(time.time()))
+        return self.send_message(self._obtain_s2c_msg(message.type_, int(time.time())))
 
 
-class LoginHandler(ChatHandler):
+class LoginHandler(Handler):
     def request(self, message):
         uobj = json.loads(message)
         if uobj:
             u = user.User(**uobj)
             ret = u.save()
-            self.send_message(ret)
+            return self.send_message(self._obtain_s2c_msg(message.type_, ret))
 
+        return self.send_message(protocol.ERR_LOGIN)   #发送登录错误
 
-class SendContHandler(ChatHandler):
+class SendContHandler(Handler):
     def request(self, message):
         self.send_message("Me: " + message + "From: " + str(self._sock.getpeername()) + " ==> " + message)
 

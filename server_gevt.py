@@ -38,10 +38,10 @@ class JBServer(object):
         socket_.close()
         JBServer.client_list.remove(socket_)
 
-    def do_send_message(self, sock, type_, message, self_message=''):
+    def do_send_message(self, sock, type_, message, echo_msg=''):
         for client_sock in JBServer.client_list:
             if client_sock is not sock:
-                client_sock.sendall(comm.pack_data(type_, self_message))
+                client_sock.sendall(comm.pack_data(type_, echo_msg))
             else:
                 print("send_message = " + message)
                 client_sock.sendall(comm.pack_data(type_, message))
