@@ -1,5 +1,5 @@
 nbproject/
-.settings/*
+.settings/
 /log/*
 .buildpath
 .metadata/
@@ -8,3 +8,4 @@ nbproject/
 .project
 .classpath
 *.iml
+*.prefs
