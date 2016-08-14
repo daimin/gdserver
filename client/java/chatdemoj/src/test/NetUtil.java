@@ -122,6 +122,15 @@ public class NetUtil {
                 }
                 catch (InterruptedException e) {
                     e.printStackTrace();
+                }finally {
+                    if (buf != null) {
+                        try {
+                            buf.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
                 }
             }
 
