@@ -17,5 +17,6 @@ MYSQL_CONFIG = {
 }
 
 
-
 DAEMON = False  # 标记是否以daemon运行
+
+DEBUG = True

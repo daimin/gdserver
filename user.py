@@ -8,6 +8,7 @@ import db
 import time
 import comm
 
+
 class User(db.Db):
     tabname = 'c_user'
     conn = None

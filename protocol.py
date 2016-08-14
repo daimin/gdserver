@@ -22,11 +22,12 @@ OK              = DEFAULT
 
 # 大于等于0x8000用于错误表示
 ERR_NONE            = Message(0x8000)
-ERR_VERSION         = Message(0x8001, data='错误的版本')
-ERR_LOGIN           = Message(0x8002)
-ERR_RANDOM_FIND     = Message(0x8003)
-ERR_FIND_CHAT       = Message(0x8004)
-ERR_NO_SUPPORT      = Message(0x8005, label='ERR_NO_SUPPORT', data=u'不支持的协议')
+ERR_VERSION         = Message(0x8001, data=u'错误的版本')
+ERR_NOT_LOGIN       = Message(0x8002, data=u'你还没有登录')
+ERR_LOGIN_FAIL      = Message(0x8003, data=u'登录失败')
+ERR_RANDOM_FIND     = Message(0x8004)
+ERR_FIND_CHAT       = Message(0x8005)
+ERR_NO_SUPPORT      = Message(0x8006, data=u'不支持的协议')
 
 
 def get_S2C_proto(tid):
