@@ -9,3 +9,5 @@ nbproject/
 .classpath
 *.iml
 *.prefs
+*.pyc
+*.log
