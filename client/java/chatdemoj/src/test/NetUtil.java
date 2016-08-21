@@ -105,10 +105,15 @@ public class NetUtil {
                     }else if(t == NetUtil.S2C_LOGIN_PROTO){
                     	System.out.println("Login Successed!!!!!!!");
                     	JOptionPane.showMessageDialog(NetUtil.this.chatClient, "登录成功", "INFO", JOptionPane.INFORMATION_MESSAGE);
-                    	NetUtil.this.chatClient.setLoginCtrlVisible(false);
+                    	NetUtil.this.chatClient.setLoginCtrlVisible(false, msg);
                     }else if(t > 0x8000){
-                    	JOptionPane.showMessageDialog(NetUtil.this.chatClient, msg, "ERROR", JOptionPane.ERROR_MESSAGE); 
-                    	System.out.println("ERROR:\t" + msg);
+                        if(msg == null || msg.trim().equals("")){
+                            JOptionPane.showMessageDialog(NetUtil.this.chatClient, "服务器错误", "ERROR", JOptionPane.ERROR_MESSAGE);
+                        }else{
+                            System.out.println("ERROR:\t" + msg);
+                            JOptionPane.showMessageDialog(NetUtil.this.chatClient, msg, "ERROR", JOptionPane.ERROR_MESSAGE);
+                        }
+
                     }
              
                     Thread.sleep(100);

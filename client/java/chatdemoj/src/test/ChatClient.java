@@ -140,9 +140,10 @@ public class ChatClient extends JFrame {
 		return passtf;
 	}
 	
-	public void setLoginCtrlVisible(boolean visible){
+	public void setLoginCtrlVisible(boolean visible, String uname){
 		loginpane.setVisible(visible);
 		findpane.setVisible(!visible);
+		this.setTitle(this.getTitle() + " 【" + uname + "】");
 	}
 	
 }
