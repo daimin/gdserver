@@ -103,6 +103,10 @@ def to_str(s):
     return s
 
 
+def str2utf8(str_):
+    return str_.decode("gbk").encode("utf-8")
+
+
 def md5(src, t='lower'):
     src = "{}-{}".format(conf.MD5_SALT, src)
     if t is 'lower':

@@ -24,13 +24,12 @@ class Handler(object):
         self._sock = sock
 
     @staticmethod
-    def _obtain_s2c_msg(tid, val, echo=None):
+    def _obtain_s2c_msg(tid, data=None, echo=None):
         """获取服务器发送给客户端消息
         """
         s2c_msg = protocol.get_S2C_proto(tid)
-        s2c_msg.set_data(val)
-        if echo is not None:
-            s2c_msg.set_echo(echo)
+        s2c_msg.set_data(data)
+        s2c_msg.set_echo(echo)
         return s2c_msg
 
     @staticmethod
@@ -40,12 +39,14 @@ class Handler(object):
         err_msg = msg.Message(errmsg.TID, data=None, echo=val)
         return err_msg
 
+    def finalize(self, sock_data):
+        pass
+
 
 class DefaultHandler(Handler):
     def request(self, message, sock):
         super(DefaultHandler, self).request(message, sock)
         return self.send_message(protocol.DEFAULT)
-
 
 class VersionHandler(Handler):
     def request(self, message, sock):
@@ -63,6 +64,13 @@ class HeartbeatHandler(Handler):
 
 
 class LoginHandler(Handler):
+
+    def record_loginuser(self, uname):
+        self._server.app_dict['login_users'][uname] = 1
+
+    def check_islogin(self, uname):
+        return self._server.app_dict['login_users'].get(uname, False)
+
     def request(self, message, sock):
         super(LoginHandler, self).request(message, sock)
         uobj = json.loads(message.data)
@@ -71,6 +79,9 @@ class LoginHandler(Handler):
             try:
                 uobj['name'] = uobj['name'].strip()
                 uobj['passwd'] = uobj['passwd'].strip()
+                # 先检查当前用户是否已经登录
+                if self.check_islogin(uobj['name']):
+                    return self.send_message(msg.Message(protocol.ERR_LOGIN_FAIL.TID, echo='当前用户已经在其它客户端登录'))
 
                 if uobj['name'] == '' or uobj['passwd'] == '':
                     return self.send_message(msg.Message(protocol.ERR_LOGIN_FAIL.TID, echo='用户名或密码为空'))
@@ -84,11 +95,18 @@ class LoginHandler(Handler):
                     ouser.save()
 
                 sock.set_data('login_user', ouser)
-                return self.send_message(self._obtain_s2c_msg(message.TID, 1))
+                self.record_loginuser(uobj['name'])
+                return self.send_message(self._obtain_s2c_msg(message.TID, data=None, echo=uobj['name']))
             except Exception, oe:
                 return self.send_message(msg.Message(protocol.ERR_LOGIN_FAIL.TID, echo=str(oe)))
 
-        return self.send_message(msg.Message(protocol.ERR_LOGIN_FAIL.TID, data=unicode(uobj) + ",登录失败"))  # 发送登录错误
+        return self.send_message(msg.Message(protocol.ERR_LOGIN_FAIL.TID, echo=str(uobj) + ",登录失败"))  # 发送登录错误
+
+    def finalize(self, sock_data):
+        loguser = sock_data.get_data('login_user')
+        if loguser.name in self._server.app_dict['login_users']:
+            print("Finalize socket login data")
+            del self._server.app_dict['login_users'][loguser.name]
 
 
 class SendContHandler(Handler):
@@ -97,7 +115,7 @@ class SendContHandler(Handler):
         login_user = sock.get_data('login_user')
         if login_user is not None:
             return self.send_message(self._obtain_s2c_msg(message.TID,
-                                                          " ==> %s From: %s" % (message.data, login_user.name),
+                                                          " ==> %s \tFrom: 【%s】" % (message.data, login_user.name),
                                                           " Me: %s" % message.data))
         else:
             return self.send_message(self._obtain_err_msg(protocol.ERR_NOT_LOGIN, '用户还未登录'))

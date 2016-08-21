@@ -5,6 +5,7 @@ from gevent.server import StreamServer
 import comm
 import signal
 import gevent
+import sys
 
 __author__ = 'daimin'
 
@@ -43,18 +44,25 @@ class JBServer(object):
         print('Client %s disconnected.' % (str(address), ))
         # 从客户socket列表中关闭并删除掉已经断开的socket
         jb_sock.close()
+        self.finalize(JBServer.client_dict[jb_sock.sid])
         del JBServer.client_dict[jb_sock.sid]
 
-    def do_send_message(self, sock, tid, message, echo_msg=''):
+    def finalize(self, sock_data):
+        pass
+
+    def do_send_message(self, sock, tid, message=None, echo_msg=None):
         for sid, client_sock in JBServer.client_dict.iteritems():
             if client_sock is not sock:
                 if message is not None:
                     client_sock.sendall(comm.pack_data(tid, message))
-            else:
-                if echo_msg is not None:
-                    client_sock.sendall(comm.pack_data(tid, echo_msg))
 
-    def runserver(self, host, port): 
+        if echo_msg is not None:
+            sock.sendall(comm.pack_data(tid, echo_msg))
+
+    def runserver(self, host, port):
+        reload(sys)
+        sys.setdefaultencoding('utf-8')
+
         server = StreamServer((host, port), self.mainloop)
         gevent.signal(signal.SIGTERM, server.close)
         gevent.signal(signal.SIGQUIT, server.close)

@@ -13,6 +13,7 @@ __author__ = 'daimin'
 class ChatServer(server_gevt.JBServer):
 
     _handlers = {}
+    app_dict = {"login_users": {}}   # 应用级别的数据, 预定义了一些数据
 
     def __init__(self):
         super(ChatServer, self).__init__()
@@ -28,6 +29,7 @@ class ChatServer(server_gevt.JBServer):
         self._handlers[protocol.SEND_CONT.TID] = SendContHandler(self)
 
     def send_message(self, sock, msg_):
+        print(msg_)
         if msg_.TID < protocol.ERR_NONE:
             super(ChatServer, self).do_send_message(sock, msg_.TID, msg_.data, msg_.echo)
         else:
@@ -40,7 +42,9 @@ class ChatServer(server_gevt.JBServer):
         handler = self._handlers.get(tid, self._handlers[protocol.DEFAULT.TID])
         handler.request(msg_obj, sock)
 
-
+    def finalize(self, sock_data):
+        for k, h in self._handlers.iteritems():
+            h.finalize(sock_data)
 
 if __name__ == '__main__':
     
