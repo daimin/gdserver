@@ -28,6 +28,8 @@ ERR_LOGIN_FAIL      = Message(0x8003, data=u'登录失败')
 ERR_RANDOM_FIND     = Message(0x8004)
 ERR_FIND_CHAT       = Message(0x8005)
 ERR_NO_SUPPORT      = Message(0x8006, data=u'不支持的协议')
+ERR_SEND_CONT       = Message(0x8007, data=u'发送消息失败')
+
 
 
 def get_S2C_proto(tid):

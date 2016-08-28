@@ -10,10 +10,19 @@ import comm
 
 
 class User(db.Db):
+
+    NORMAL_STATUS  = 1
+    DELETE_STATUS  = 0
+
+    READY_ACTION = 1
+    PLAYING_ACTION = 2
+    CHATTING_ACTION = 3
+
     tabname = 'c_user'
     conn = None
 
     id = ''
+    sid = None # socket id
     name = ''
     passwd = ''
     sex = ''
@@ -26,6 +35,7 @@ class User(db.Db):
 
     def __init__(self, **kwargs):
         self.id = kwargs.get('id', '')
+        self.sid = kwargs.get('sid', None)
         self.name = kwargs.get('name', '')
         self.passwd = kwargs.get('passwd', '')
         self.sex = kwargs.get('sex', 2) # 0 女，1 男，2未知
@@ -38,7 +48,8 @@ class User(db.Db):
         self.ctime = kwargs.get('ctime', 0)
         self.utime = kwargs.get('utime', 0)
         self.ltime = kwargs.get('ltime', 0)
-        self.state = kwargs.get('state', 1)
+        self.status = kwargs.get('status', User.NORMAL_STATUS)
+        self.action = self.READY_ACTION
 
         self._dbconn = kwargs.get('conn', None)
         if self._dbconn is None:
@@ -55,11 +66,11 @@ class User(db.Db):
                 self.ctime = int(time.time())
                 self.utime = self.ctime
                 self.id = self._dbconn.insert("INSERT INTO `%s`(`name`, `passwd`, `sex`, `score`, `grade`, `phone`, `devid`,"
-                                    " `country`, `city`, `ctime`, `utime`, `ltime`, `state`) VALUES('%s', '%s', '%s',"
+                                    " `country`, `city`, `ctime`, `utime`, `ltime`, `status`) VALUES('%s', '%s', '%s',"
                                     " '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')"
                                     % (self.tabname, self.name, self.passwd, self.sex, self.score, self.grade,
                                        self.phone, self.devid, self.country, self.city, self.ctime, self.utime,
-                    self.ltime, self.state))
+                    self.ltime, self.status))
                 return self.id
             else:
                 self.id = u.id
@@ -68,10 +79,10 @@ class User(db.Db):
 
     def update(self):
         return self._dbconn.update("UPDATE  `%s` SET `name`='%s', `passwd`='%s', `sex`='%s', `score`='%s', `grade`='%s',\
-         `phone`='%s', `devid`='%s', `country`='%s', `city`='%s', `ctime`='%s', `utime`='%s', `ltime`='%s', `state`='%s'\
+         `phone`='%s', `devid`='%s', `country`='%s', `city`='%s', `ctime`='%s', `utime`='%s', `ltime`='%s', `status`='%s'\
           WHERE `id`='%s'" % (self.tabname, self.name, self.passwd, self.sex,\
            self.score, self.grade, self.phone, self.devid, self.country, self.city, self.ctime, self.utime,\
-           self.ltime, self.state, self.id))
+           self.ltime, self.status, self.id))
 
     @staticmethod
     def find_user(id):
