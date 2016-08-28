@@ -51,13 +51,15 @@ class JBServer(object):
         pass
 
     def do_send_message(self, sock, tid, message=None, echo_msg=None):
-        for sid, client_sock in JBServer.client_dict.iteritems():
-            if client_sock is not sock:
-                if message is not None:
-                    client_sock.sendall(comm.pack_data(tid, message))
+        # for sid, client_sock in JBServer.client_dict.iteritems():
+        #     if client_sock is not sock:
+        #         if message is not None:
+        #             client_sock.sendall(comm.pack_data(tid, message))
 
         if echo_msg is not None:
             sock.sendall(comm.pack_data(tid, echo_msg))
+            for pairsock in sock.teams:
+                pairsock.sendall(comm.pack_data(tid, message))
 
     def runserver(self, host, port):
         reload(sys)
@@ -82,6 +84,7 @@ class JBSocket(object):
         self._sock = sock
         self.sid = sid
         self._data = {}
+        self.teams = []  #小组
 
     def recv(self, size_):
         return self._sock.recv(size_)

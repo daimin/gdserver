@@ -27,9 +27,9 @@ class ChatServer(server_gevt.JBServer):
         self._handlers[protocol.HEARTBEAT.TID] = HeartbeatHandler(self)
         self._handlers[protocol.LOGIN.TID] = LoginHandler(self)
         self._handlers[protocol.SEND_CONT.TID] = SendContHandler(self)
+        self._handlers[protocol.FIND_CHAT.TID] = FindChatHandler(self)
 
     def send_message(self, sock, msg_):
-        print(msg_)
         if msg_.TID < protocol.ERR_NONE:
             super(ChatServer, self).do_send_message(sock, msg_.TID, msg_.data, msg_.echo)
         else:
