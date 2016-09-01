@@ -1,11 +1,11 @@
 #coding:utf-8
 from __future__ import absolute_import, division, print_function, \
     with_statement
-import server_gevt
-import conf
-import daemon
-from chat_handlers import *
 
+from chatserver.chat_handlers import *
+from gdserver import  conf
+from gdserver import daemon, server_gevt
+from gdserver.handler import DefaultHandler, VersionHandler, HeartbeatHandler, LoginHandler
 
 __author__ = 'daimin'
 
@@ -48,7 +48,7 @@ class ChatServer(server_gevt.JBServer):
 
 if __name__ == '__main__':
     
-    config = {'daemon': 'start', 'pid-file': '/tmp/chat-server.pid', 'log-file':'log.log', 'user': 'daimin'}
+    config = {'daemon': 'start', 'pid-file': '/tmp/chat-gdserver.pid', 'log-file':'log.log', 'user': 'daimin'}
     if conf.DAEMON:
         daemon.daemon_exec(config)
         daemon.set_user(config.get('user', None))

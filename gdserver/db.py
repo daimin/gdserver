@@ -4,8 +4,8 @@ from __future__ import absolute_import, division, print_function, \
     with_statement
 __author__ = 'daimin'
 
-import torndb
-import conf
+from gdserver import conf, torndb
+
 
 class Db(object):
     _conn = None

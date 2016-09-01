@@ -4,9 +4,7 @@ from __future__ import absolute_import, division, print_function, \
 
 __author__ = 'daimin'
 
-from message import Message
-import copy
-import sys
+from gdserver.message import Message
 
 DEFAULT         = Message(0x0000)
 VERSION         = Message(0x0001)

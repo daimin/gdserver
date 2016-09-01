@@ -1,15 +1,16 @@
 #coding:utf-8
 __author__ = 'daimin'
 
-
 import socket
 import sys
+
 from gevent import monkey
+
 monkey.patch_socket()
 import gevent
 import select
-import comm
-import protocol
+from gdserver import comm
+from gdserver import protocol
 import time
 import json
 

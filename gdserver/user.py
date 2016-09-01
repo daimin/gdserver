@@ -4,9 +4,9 @@ from __future__ import absolute_import, division, print_function, \
 
 __author__ = 'daimin'
 
-import db
+from gdserver import db
+from gdserver import  comm
 import time
-import comm
 
 
 class User(db.Db):

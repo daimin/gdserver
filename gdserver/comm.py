@@ -5,12 +5,10 @@ from __future__ import absolute_import, division, print_function, \
 __author__ = 'daimin'
 
 import struct
-import protocol
-import message
+from gdserver import protocol, conf, message
 import msgpack
 import random
 from Crypto.Cipher import AES
-import conf
 import hashlib
 import logging
 import base64

@@ -2,7 +2,7 @@
 from __future__ import absolute_import, division, print_function, \
     with_statement
 from gevent.server import StreamServer
-import comm
+from gdserver import comm
 import signal
 import gevent
 import sys
@@ -70,9 +70,9 @@ class JBServer(object):
         gevent.signal(signal.SIGQUIT, server.close)
         gevent.signal(signal.SIGINT, server.close)
 
-        # to start the server asynchronously, use its start() method;
+        # to start the gdserver asynchronously, use its start() method;
         # we use blocking serve_forever() here because we have no other jobs
-        print('Starting server on port %s' % port)
+        print('Starting gdserver on port %s' % port)
         server.serve_forever()
 
 
