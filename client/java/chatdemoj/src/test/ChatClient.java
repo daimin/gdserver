@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.awt.event.*;
 
 public class ChatClient extends JFrame {
+	private final JLabel nameTxt;
+	private final JPanel namepane;
 	private DatagramSocket s;
 
 	private InetAddress hostAddress;
@@ -33,8 +35,8 @@ public class ChatClient extends JFrame {
     private NetUtil netUtil;
     
     private JPanel loginpane;
-    
-    private JPanel findpane;
+
+	private JPanel findpane;
 
 	private JTextField nametf;
 
@@ -97,14 +99,19 @@ public class ChatClient extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String sendMsg = ChatClient.this.getNametf().getText();
-				ChatClient.this.getNetUtil().send(sendMsg, 3);
+				String sendMsg = findtf.getText();
+				ChatClient.this.getNetUtil().send(sendMsg, NetUtil.C2S_FIND_CHAT);
 			}
 			
 		});
 		findpane.add(findtf, FlowLayout.LEFT);
 		findpane.add(findbtn);
-		
+
+		nameTxt = new JLabel("xxxxxxxxxxxx");
+		namepane = new JPanel(new FlowLayout());
+		namepane.setVisible(false);
+		namepane.add(nameTxt);
+
 		ta = new JTextArea();
 		ta.setEditable(false);
         ta.setForeground(Color.BLUE);
@@ -117,6 +124,7 @@ public class ChatClient extends JFrame {
 		JPanel jfpane = new JPanel(new BorderLayout());
 		jfpane.add(loginpane, BorderLayout.NORTH);
 		jfpane.add(findpane, BorderLayout.SOUTH);
+		jfpane.add(namepane, BorderLayout.CENTER);
 		
 		pane.add(jfpane, BorderLayout.NORTH);
 		
@@ -139,11 +147,23 @@ public class ChatClient extends JFrame {
 	public JTextField getPasstf() {
 		return passtf;
 	}
+
+	public JPanel getFindpane() {
+		return findpane;
+	}
 	
 	public void setLoginCtrlVisible(boolean visible, String uname){
 		loginpane.setVisible(visible);
 		findpane.setVisible(!visible);
+		namepane.setVisible(visible);
 		this.setTitle(this.getTitle() + " 【" + uname + "】");
+	}
+
+	public void setNameTextCtrlVisible(String uname){
+		loginpane.setVisible(false);
+		findpane.setVisible(false);
+		namepane.setVisible(true);
+		nameTxt.setText("与【" + uname + "】聊天中...");
 	}
 	
 }

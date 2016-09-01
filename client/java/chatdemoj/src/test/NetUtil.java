@@ -21,7 +21,9 @@ public class NetUtil {
 	public static int C2S_LOGIN_PROTO = 0x0003;
 	public static int S2C_LOGIN_PROTO = 0x1003;
 
-	
+    public static int C2S_FIND_CHAT = 0x0005;
+    public static int S2C_FIND_CHAT = 0x1005;
+
     private PrintStream out;
     private ChatClient chatClient;
 
@@ -31,7 +33,7 @@ public class NetUtil {
 
     public void connect() throws IOException {
 //        Log.i("Base64.decode", new String(Base64.encode("hello, daimin".getBytes(), Base64.DEFAULT)));
-        Socket client = new Socket("192.168.0.104", 5005);
+        Socket client = new Socket("192.168.0.103", 5005);
         client.setSoTimeout(1000 * 300);
         client.setKeepAlive(true);
         //获取Socket的输出流，用来发送数据到服务端
@@ -106,6 +108,10 @@ public class NetUtil {
                     	System.out.println("Login Successed!!!!!!!");
                     	JOptionPane.showMessageDialog(NetUtil.this.chatClient, "登录成功", "INFO", JOptionPane.INFORMATION_MESSAGE);
                     	NetUtil.this.chatClient.setLoginCtrlVisible(false, msg);
+                    }else if(t == NetUtil.S2C_FIND_CHAT){
+                        System.out.println("Find Successed!!!!!!!");
+//                        JOptionPane.showMessageDialog(NetUtil.this.chatClient, "查找成功，与【" + msg + "】开始聊天", "INFO", JOptionPane.INFORMATION_MESSAGE);
+                        NetUtil.this.chatClient.setNameTextCtrlVisible(msg);
                     }else if(t > 0x8000){
                         if(msg == null || msg.trim().equals("")){
                             JOptionPane.showMessageDialog(NetUtil.this.chatClient, "服务器错误", "ERROR", JOptionPane.ERROR_MESSAGE);
