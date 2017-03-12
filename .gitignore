@@ -11,3 +11,6 @@ nbproject/
 *.prefs
 *.pyc
 *.log
+*.exe
+*.a
+*.log
