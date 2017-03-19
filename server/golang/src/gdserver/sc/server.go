@@ -1,5 +1,5 @@
 // server
-package ipc
+package sc
 
 import (
 	"encoding/json"
@@ -26,7 +26,7 @@ type IpcServer struct {
 }
 
 func NewIpcServer(server Server) *IpcServer {
-	return &IpcServer{server}
+	return &IpcServer{server} //也就等于new IpcCenter{server}
 }
 
 func (server *IpcServer) Connect() chan string {

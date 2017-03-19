@@ -11,6 +11,15 @@ import (
 
 var _ ipc.Server = &CenterServer{}
 
+type Message struct {
+	From    string "from"
+	To      string "to"
+	Content string "content"
+}
+
+type Room struct {
+}
+
 type CenterServer struct {
 	servers map[string]ipc.Server
 	players []*Player

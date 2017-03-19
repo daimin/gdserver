@@ -107,6 +107,9 @@ func Send(args []string) int {
 	return 0
 }
 
+/*
+这里返回的是一个map，map的键是string，值是函数
+*/
 func GetCommandHandlers() map[string]func(args []string) int {
 	return map[string]func([]string) int{
 		"help":       Help,
@@ -138,7 +141,7 @@ func main() {
 
 		tokens := strings.Split(line, " ")
 
-		if handler, ok := handlers[tokens[0]]; ok {
+		if handler, ok := handlers[tokens[0]]; ok { //go语言if可以赋值加判断一起
 			ret := handler(tokens)
 			if ret != 0 {
 				break
