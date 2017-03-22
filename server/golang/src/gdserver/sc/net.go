@@ -2,7 +2,7 @@
 package sc
 
 import (
-	"bytes"
+	_ "bytes"
 	"fmt"
 	"gdserver/comm"
 	"io"

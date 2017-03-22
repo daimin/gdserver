@@ -6,12 +6,18 @@ import (
 )
 
 type Player struct {
-	Name  string "name"
-	Level int    "level"
-	Exp   int    "exp"
-	Room  int    "room"
-
-	mq chan *Message
+	Id      int    "id"
+	Name    string "name"
+	Passwd  string "password"
+	Sex     int    "sex"
+	Score   int    "score"
+	Level   int    "level"
+	Tel     int    "telphone"
+	Devid   string "device id"
+	Country string "country"
+	City    string "city"
+	Room    int    "room"
+	mq      chan *Message
 }
 
 func NewPlayer() *Player {
