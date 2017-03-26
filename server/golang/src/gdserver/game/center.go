@@ -6,20 +6,20 @@ import (
 	"errors"
 	"sync"
 
-	"gdserver/ipc"
+	"gdserver/sc"
 )
 
-var _ ipc.Server = &CenterServer{}
+var _ sc.Server = &CenterServer{}
 
 type CenterServer struct {
-	servers map[string]ipc.Server
+	servers map[string]sc.Server
 	players []*Player
 	rooms   []*Room
 	mutex   sync.RWMutex
 }
 
 func NewCenterServer() *CenterServer {
-	servers := make(map[string]ipc.Server)
+	servers := make(map[string]sc.Server)
 	players := make([]*Player, 0)
 
 	return &CenterServer{servers: servers, players: players}

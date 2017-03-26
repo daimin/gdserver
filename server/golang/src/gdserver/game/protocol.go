@@ -1,24 +1,24 @@
 // protocol
 package cg
 
-DEFAULT         = NewMessage(0x0000)
-VERSION         = NewMessage(0x0001)
-HEARTBEAT       = NewMessage(0x0002)
-LOGIN           = NewMessage(0x0003)
-RANDOM_CHAT     = NewMessage(0x0004)
-FIND_CHAT       = NewMessage(0x0005)
-SEND_CONT       = NewMessage(0x0006)
-RECV_CONT       = NewMessage(0x0007)
-OVER_CHAT       = NewMessage(0x0008)
-LOGOUT          = NewMessage(0x0009)
-OK              = DEFAULT
+var DEFAULT *Message = NewMessage(0x0000)
+var VERSION *Message = NewMessage(0x0001)
+var HEARTBEAT *Message = NewMessage(0x0002)
+var LOGIN *Message = NewMessage(0x0003)
+var RANDOM_CHAT *Message = NewMessage(0x0004)
+var FIND_CHAT *Message = NewMessage(0x0005)
+var SEND_CONT *Message = NewMessage(0x0006)
+var RECV_CONT *Message = NewMessage(0x0007)
+var OVER_CHAT *Message = NewMessage(0x0008)
+var LOGOUT *Message = NewMessage(0x0009)
+var OK *Message = DEFAULT
 
 // 大于等于0x8000用于错误表示
-ERR_NONE            = NewMessage(0x8000)
-ERR_VERSION         = NewMessage(0x8001, data=u'错误的版本')
-ERR_NOT_LOGIN       = NewMessage(0x8002, data=u'你还没有登录')
-ERR_LOGIN_FAIL      = NewMessage(0x8003, data=u'登录失败')
-ERR_RANDOM_FIND     = NewMessage(0x8004)
-ERR_FIND_CHAT       = NewMessage(0x8005)
-ERR_NO_SUPPORT      = NewMessage(0x8006, data=u'不支持的协议')
-ERR_SEND_CONT       = NewMessage(0x8007, data=u'发送消息失败')
+var ERR_NONE *Message = NewMessage(0x8000)
+var ERR_VERSION *Message = NewMessage(0x8001, 0, "错误的版本")
+var ERR_NOT_LOGIN *Message = NewMessage(0x8002, 0, "你还没有登录")
+var ERR_LOGIN_FAIL *Message = NewMessage(0x8003, 0, "登录失败")
+var ERR_RANDOM_FIND *Message = NewMessage(0x8004)
+var ERR_FIND_CHAT *Message = NewMessage(0x8005)
+var ERR_NO_SUPPORT *Message = NewMessage(0x8006, 0, "不支持的协议")
+var ERR_SEND_CONT *Message = NewMessage(0x8007, 0, "发送消息失败")

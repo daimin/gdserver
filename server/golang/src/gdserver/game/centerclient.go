@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 
-	"gdserver/ipc"
+	"gdserver/sc"
 )
 
 type CenterClient struct {
-	*ipc.IpcClient
+	*sc.IpcClient
 }
 
 func (client *CenterClient) AddPlayer(player *Player) error {
