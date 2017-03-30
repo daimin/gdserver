@@ -52,7 +52,7 @@ public class NetUtil {
 
     public void send(String str, int tid){
         try {
-            out.write(SimpleCrypto.pack(CompressionTools.compress(SimpleCrypto.encode(str).getBytes()), tid));
+            out.write(SimpleCrypto.pack(SimpleCrypto.encode(str).getBytes(), tid));
         } catch (IOException e) {
             e.printStackTrace();
         }

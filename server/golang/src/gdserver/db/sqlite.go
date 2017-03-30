@@ -14,7 +14,7 @@ var conn *sql.DB = nil
 func Conn() *sql.DB {
 	if conn == nil {
 		var err error
-		conn, err = sql.Open("sqlite3", "./foo.s3db")
+		conn, err = sql.Open("sqlite3", comm.LoadConfig().Dbconfig.DbName)
 		comm.CheckErr(err)
 	}
 

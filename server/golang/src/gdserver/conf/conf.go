@@ -1,8 +1,21 @@
 // conf
 package conf
 
-//默认的host
-const HOST = "127.0.0.1"
+type Database struct {
+	Type   string
+	Host   string
+	Port   int
+	DbName string
+	User   string
+	Pwd    string
+}
 
-//默认的port
-const PORT = 14395
+type Server struct {
+	Host string
+	Port int
+}
+
+type Conf struct {
+	Dbconfig     *Database
+	ServerConfig *Server
+}

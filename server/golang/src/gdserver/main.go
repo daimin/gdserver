@@ -4,8 +4,7 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"gdserver/conf"
-	_ "gdserver/db"
+	"gdserver/comm"
 	"gdserver/sc"
 	"os"
 	"strconv"
@@ -13,8 +12,7 @@ import (
 )
 
 func Help(args []string) int {
-	fmt.Println("
-	Commands:<host> <port>")
+	fmt.Println("Commands:<host> <port>")
 	return 0
 }
 
@@ -35,8 +33,8 @@ func main() {
 	b, _, _ := r.ReadLine()
 	line := string(b)
 
-	host := conf.HOST
-	port := conf.PORT
+	host := comm.LoadConfig().ServerConfig.Host
+	port := comm.LoadConfig().ServerConfig.Port
 	args := strings.Split(line, " ")
 	if len(args) > 1 {
 		host = args[0]
