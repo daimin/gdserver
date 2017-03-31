@@ -22,7 +22,7 @@ type Server interface {
 }
 
 type IpcServer struct {
-	Server
+	Server ////匿名字段，那么默认IpcServer就包含了Server的所有字段。当匿名字段是一个struct的时候，那么这个struct所拥有的全部字段都被隐式地引入了当前定义的这个struct
 }
 
 func NewIpcServer(server Server) *IpcServer {

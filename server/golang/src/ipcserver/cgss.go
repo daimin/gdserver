@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"gdserver/cg"
-	"gdserver/ipc"
+	"ipcserver/cg"
+	"ipcserver/ipc"
 )
 
 var centerClient *cg.CenterClient

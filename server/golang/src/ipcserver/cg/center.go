@@ -6,10 +6,13 @@ import (
 	"errors"
 	"sync"
 
-	"gdserver/ipc"
+	"ipcserver/ipc"
 )
 
-var _ ipc.Server = &CenterServer{}
+// ipc.Server是一个接口类型不是一个变量。比如：var int = 2 这里是检查&ipc.CenterServer是否满足 ipc.Server接口。
+//上面用来判断 type T是否实现了I,用作类型断言，如果T没有实现借口I，则编译错误.
+// golang中的实现一个类，只要有相同的方法就算是实现了
+var _ ipc.Server = &CenterServer{} //在Go语言中，一个类只需要实现了接口要求的所有函数，我们就说这个类实现了该接口
 
 type Message struct {
 	From    string "from"

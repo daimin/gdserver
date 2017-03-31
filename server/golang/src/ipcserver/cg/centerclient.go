@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 
-	"gdserver/ipc"
+	"ipcserver/ipc"
 )
 
 type CenterClient struct {
