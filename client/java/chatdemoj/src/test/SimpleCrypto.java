@@ -335,11 +335,11 @@ public class SimpleCrypto {
 //        System.out.println(parseByte2HexStr(kb));
 //        test1();
 //        test_pad16Byte();
-        byte [] cbuf = new byte[1024];
-        for(byte nbnb : cbuf){
-            System.out.print(nbnb + " ");
-        }
+//        byte [] cbuf = new byte[1024];
+//        for(byte nbnb : cbuf){
+//            System.out.print(nbnb + " ");
+//        }
 
-        System.out.println();
+        System.out.println(encode("123"));
     }
 }

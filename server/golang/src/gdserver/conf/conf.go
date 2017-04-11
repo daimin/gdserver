@@ -11,8 +11,9 @@ type Database struct {
 }
 
 type Server struct {
-	Host string
-	Port int
+	Host     string
+	Port     int
+	CrytoKey string
 }
 
 type Conf struct {

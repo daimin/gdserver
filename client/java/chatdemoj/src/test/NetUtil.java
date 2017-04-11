@@ -30,10 +30,10 @@ public class NetUtil {
     public NetUtil(ChatClient chatClient){
         this.chatClient = chatClient;
     }
-
+ 
     public void connect() throws IOException {
 //        Log.i("Base64.decode", new String(Base64.encode("hello, daimin".getBytes(), Base64.DEFAULT)));
-        Socket client = new Socket("192.168.0.103", 5005);
+        Socket client = new Socket("127.0.0.1", 14395);
         client.setSoTimeout(1000 * 300);
         client.setKeepAlive(true);
         //获取Socket的输出流，用来发送数据到服务端
@@ -101,7 +101,7 @@ public class NetUtil {
                     byte [] cdatabuf = new byte[dataSize];
                     bufInputStream.read(cdatabuf, 0, dataSize);
                     System.out.println(Arrays.toString(cdatabuf));
-                    String msg = SimpleCrypto.decode(new String(CompressionTools.decompress(cdatabuf), "utf-8"));
+                    String msg = SimpleCrypto.decode(new String(cdatabuf, "utf-8"));
                     if(t == NetUtil.S2C_SEND_CONT_PROTO){
                     	NetUtil.this.chatClient.getTa().append(msg + "\n");
                     }else if(t == NetUtil.S2C_LOGIN_PROTO){
@@ -127,8 +127,6 @@ public class NetUtil {
                     ste.printStackTrace();
                 }
                 catch (IOException e) {
-                    e.printStackTrace();
-                } catch (DataFormatException e) {
                     e.printStackTrace();
                 }
                 catch (InterruptedException e) {

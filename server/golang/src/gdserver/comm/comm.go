@@ -2,7 +2,7 @@
 package comm
 
 import (
-	"fmt"
+	_ "fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -50,7 +50,6 @@ func LoadConfig() *conf.Conf {
 	if iniConf != nil {
 		return iniConf
 	}
-	fmt.Println("===")
 	rootPath := getCurrentDirectory()
 	cfg, err := ini.InsensitiveLoad(rootPath + "/conf/conf.ini")
 	CheckErr(err)
@@ -65,7 +64,7 @@ func LoadConfig() *conf.Conf {
 		getValue(inidbSection.GetKey("PWD"))}
 	iniServerSection, err := cfg.GetSection("server")
 	CheckErr(err)
-	serverConf := &conf.Server{getValue(iniServerSection.GetKey("HOST")), atoI(getValue(inidbSection.GetKey("PORT")))}
+	serverConf := &conf.Server{getValue(iniServerSection.GetKey("HOST")), atoI(getValue(iniServerSection.GetKey("PORT"))), getValue(iniServerSection.GetKey("CRYTO_KEY"))}
 	iniConf = &conf.Conf{dbconf, serverConf}
 	return iniConf
 }
