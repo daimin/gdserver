@@ -93,7 +93,6 @@ public class SimpleCrypto {
             arsize = ((src.length / 16) + 1) * 16;
         }
         byte[] nnm = new byte[arsize];
-        byte fb = (byte) (16 - src.length % 16);
         for (int i = 0; i < arsize; i++){
             if(i < src.length){
                 nnm[i] = src[i];
@@ -118,7 +117,7 @@ public class SimpleCrypto {
             Cipher cipher = Cipher.getInstance(algorithmStr);
             byte[] byteContent = content.getBytes("utf-8");
             cipher.init(Cipher.ENCRYPT_MODE, key, iv);//   ʼ
-            byte[] result = cipher.doFinal(pad16Byte(byteContent));
+            byte[] result = cipher.doFinal(byteContent);
             return result; //
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -139,7 +138,6 @@ public class SimpleCrypto {
     private static byte[] decrypt(byte[] content, String password)  throws InvalidAlgorithmParameterException{
         try {
 //            System.out.println("before decode.content.length = " + content.length);
-            content = pad16Byte(content);
             byte[] keyStr = getKey(password);
             SecretKeySpec key = new SecretKeySpec(keyStr, "AES");
             byte[] ivbuf = new byte[16];

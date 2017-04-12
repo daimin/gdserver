@@ -53,7 +53,7 @@ func (this *AesEncrypt) Encrypt(strMesg string) (string, error) {
 	}
 	origData := []byte(strMesg)
 	origData = PKCS5Padding(origData, block.BlockSize())
-	blockMode := cipher.NewCBCEncrypter(block, key)
+	blockMode := cipher.NewCBCEncrypter(block, make([]byte, len(key)))
 	crypted := make([]byte, len(origData))
 	// 根据CryptBlocks方法的说明，如下方式初始化crypted也可以
 	// crypted := origData
@@ -76,7 +76,7 @@ func (this *AesEncrypt) Decrypt(src []byte) (strDesc string, err error) {
 	if err != nil {
 		return "", err
 	}
-	blockMode := cipher.NewCBCDecrypter(block, key)
+	blockMode := cipher.NewCBCDecrypter(block, make([]byte, len(key)))
 	origData := make([]byte, len(crypted))
 	blockMode.CryptBlocks(origData, crypted)
 	origData = PKCS5UnPadding(origData)
