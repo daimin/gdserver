@@ -262,8 +262,8 @@ public class SimpleCrypto {
         }
         ByteBuffer buf = ByteBuffer.wrap(databuf);
         buf.putShort((short)tid);
-//        Log.i("pack data = ", new String(data) + "");
-//        Log.i("pack data.length = ", data.length + "");
+        Log.i("pack data = ", new String(data) + "");
+        Log.i("pack data.length = ", data.length + "");
         buf.putShort((short) data.length);
         buf.put(data);
         return buf.array();

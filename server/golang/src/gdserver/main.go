@@ -32,9 +32,9 @@ func main() {
 	//	lastId := db.Insert("INSERT INTO userinfo(username, departname, created) values(?,?,?)", "min", "技术部", "2015-07-21")
 	//	fmt.Printf("last id = %d\n", lastId)
 	sc.Listen(host, port)
-	//	encrypt := &comm.AesEncrypt{}
-	//	enstr, err := encrypt.Encrypt("123")
-	//	comm.CheckErr(err)
-	//	fmt.Println(string(enstr))
+	//	enstr, _ := comm.GetAesEncrypt().Encrypt("1")
+	//	fmt.Println(enstr)
+	//	destr, _ := comm.GetAesEncrypt().Decrypt(enstr)
+	//	fmt.Println(destr)
 
 }

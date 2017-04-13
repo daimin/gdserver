@@ -70,21 +70,26 @@ func NetServer(listen *net.TCPListener) {
 		go func() {
 			for {
 
-				_, ret1 := getHead(conn)
+				type_, ret1 := getHead(conn)
 				if !ret1 {
 					break
 				}
+
+				fmt.Printf("Protocol type = %d\n", type_)
+
 				dataSize, ret2 := getHead(conn)
 				if !ret2 {
 					break
 				}
-
+				fmt.Printf("Content size = %d\n", dataSize)
 				cont, ret3 := read(conn, int(dataSize))
 				if !ret3 {
 					break
 				}
-
-				fmt.Println(string(cont))
+				fmt.Printf("Content = %s\n", cont)
+				decryptCont, err := comm.GetAesEncrypt().Decrypt(string(cont))
+				comm.CheckErr(err)
+				fmt.Println(string(decryptCont))
 
 			}
 

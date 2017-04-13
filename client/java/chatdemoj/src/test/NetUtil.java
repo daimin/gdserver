@@ -124,22 +124,25 @@ public class NetUtil {
              
                     Thread.sleep(100);
                 }catch (SocketTimeoutException ste){
-                    ste.printStackTrace();
+                    ste.printStackTrace();break;
                 }
                 catch (IOException e) {
-                    e.printStackTrace();
+                    e.printStackTrace();break;
                 }
                 catch (InterruptedException e) {
                     e.printStackTrace();
+                    break;
                 }finally {
                     if (buf != null) {
                         try {
                             buf.close();
                         } catch (IOException e) {
                             e.printStackTrace();
+                            break;
                         }
 
                     }
+                    
                 }
             }
 

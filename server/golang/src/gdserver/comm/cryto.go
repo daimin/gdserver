@@ -6,11 +6,14 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
+	_ "errors"
 	_ "fmt"
 )
 
 type AesEncrypt struct {
 }
+
+var aesEncryptObj *AesEncrypt
 
 func PKCS5Padding(ciphertext []byte, blockSize int) []byte {
 	padding := blockSize - len(ciphertext)%blockSize
@@ -53,7 +56,7 @@ func (this *AesEncrypt) Encrypt(strMesg string) (string, error) {
 	}
 	origData := []byte(strMesg)
 	origData = PKCS5Padding(origData, block.BlockSize())
-	blockMode := cipher.NewCBCEncrypter(block, make([]byte, len(key)))
+	blockMode := cipher.NewCBCEncrypter(block, make([]byte, block.BlockSize()))
 	crypted := make([]byte, len(origData))
 	// 根据CryptBlocks方法的说明，如下方式初始化crypted也可以
 	// crypted := origData
@@ -62,23 +65,26 @@ func (this *AesEncrypt) Encrypt(strMesg string) (string, error) {
 }
 
 //解密字符串
-func (this *AesEncrypt) Decrypt(src []byte) (strDesc string, err error) {
+func (this *AesEncrypt) Decrypt(srcStr string) (strDesc string, err error) {
 
-	crypted := make([]byte, len(src))
-
-	size, err := base64.StdEncoding.Decode(crypted, src)
+	crypted, err := base64.StdEncoding.DecodeString(srcStr)
 	CheckErr(err)
-	if size == 0 {
-		return "", nil
-	}
 	key := this.getKey()
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return "", err
 	}
-	blockMode := cipher.NewCBCDecrypter(block, make([]byte, len(key)))
+
+	blockMode := cipher.NewCBCDecrypter(block, make([]byte, block.BlockSize()))
 	origData := make([]byte, len(crypted))
 	blockMode.CryptBlocks(origData, crypted)
 	origData = PKCS5UnPadding(origData)
 	return string(origData), nil
+}
+
+func GetAesEncrypt() *AesEncrypt {
+	if aesEncryptObj == nil {
+		aesEncryptObj = &AesEncrypt{}
+	}
+	return aesEncryptObj
 }
