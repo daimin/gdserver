@@ -62,10 +62,10 @@ func NetServer(listen *net.TCPListener) {
 	for {
 		conn, err := listen.AcceptTCP()
 		if err != nil {
-			fmt.Println("接受客户端连接异常:", err.Error())
+			comm.LogErr(fmt.Sprintf("接受客户端连接异常:%s", err.Error()))
 			continue
 		}
-		fmt.Println("客户端连接来自:", conn.RemoteAddr().String())
+		comm.LogMsg(fmt.Sprintf("客户端连接来自:", conn.RemoteAddr().String()))
 		defer conn.Close()
 		go func() {
 			for {
@@ -75,22 +75,21 @@ func NetServer(listen *net.TCPListener) {
 					break
 				}
 
-				fmt.Printf("Protocol type = %d\n", type_)
+				comm.LogMsg(fmt.Sprintf("Protocol type = %d", type_))
 
 				dataSize, ret2 := getHead(conn)
 				if !ret2 {
 					break
 				}
-				fmt.Printf("Content size = %d\n", dataSize)
+				comm.LogMsg(fmt.Sprintf("Content size = %d", dataSize))
 				cont, ret3 := read(conn, int(dataSize))
 				if !ret3 {
 					break
 				}
-				fmt.Printf("Content = %s\n", cont)
+				comm.LogMsg(fmt.Sprintf("Content = %s", cont))
 				decryptCont, err := comm.GetAesEncrypt().Decrypt(string(cont))
 				comm.CheckErr(err)
 				fmt.Println(string(decryptCont))
-
 			}
 
 		}()

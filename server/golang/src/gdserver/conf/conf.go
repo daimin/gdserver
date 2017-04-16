@@ -14,6 +14,7 @@ type Server struct {
 	Host     string
 	Port     int
 	CrytoKey string
+	Debug    bool
 }
 
 type Conf struct {

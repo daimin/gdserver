@@ -2,7 +2,7 @@
 package comm
 
 import (
-	_ "fmt"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -11,13 +11,21 @@ import (
 
 	"strconv"
 
+	"log"
+
+	"time"
+
 	"github.com/go-ini/ini"
 )
 
 var iniConf *conf.Conf = nil
+var msgLogger *log.Logger = nil
+var errLogger *log.Logger = nil
 
 func CheckErr(err error) {
 	if err != nil {
+
+		LogErr(string(err.Error()))
 		panic(err)
 	}
 }
@@ -64,9 +72,59 @@ func LoadConfig() *conf.Conf {
 		getValue(inidbSection.GetKey("PWD"))}
 	iniServerSection, err := cfg.GetSection("server")
 	CheckErr(err)
-	serverConf := &conf.Server{getValue(iniServerSection.GetKey("HOST")), atoI(getValue(iniServerSection.GetKey("PORT"))), getValue(iniServerSection.GetKey("CRYTO_KEY"))}
+	serverConf := &conf.Server{getValue(iniServerSection.GetKey("HOST")),
+		atoI(getValue(iniServerSection.GetKey("PORT"))),
+		getValue(iniServerSection.GetKey("CRYTO_KEY")),
+		atoI(getValue(iniServerSection.GetKey("DEBUG"))) > 0}
 	iniConf = &conf.Conf{dbconf, serverConf}
 	return iniConf
+}
+
+/**
+ * 判断文件是否存在  存在返回 true 不存在返回false
+ */
+func checkFileIsExist(filename string) bool {
+	var exist = true
+	if _, err := os.Stat(filename); os.IsNotExist(err) {
+		exist = false
+	}
+	return exist
+}
+
+func createLogFile(filepath string) *log.Logger {
+	var file *os.File = nil
+	var err error
+	if checkFileIsExist(filepath) {
+		file, err = os.OpenFile(filepath, os.O_APPEND, 0666) //打开文件
+		CheckErr(err)
+	} else {
+		file, err = os.Create(filepath)
+		CheckErr(err)
+	}
+
+	_logger := log.New(file, "", log.LstdFlags|log.Llongfile)
+	return _logger
+}
+
+func LogMsg(message string) {
+	if msgLogger == nil {
+		msgLogger = createLogFile(fmt.Sprintf("%s/logs/%s.log", getCurrentDirectory(), time.Now().Format("2006010215")))
+	}
+	if LoadConfig().ServerConfig.Debug {
+		fmt.Println(message)
+	}
+	msgLogger.Println(message)
+}
+
+func LogErr(message string) {
+	if errLogger == nil {
+		errLogger = createLogFile(fmt.Sprintf("%s/logs/%s.err.log", getCurrentDirectory(), time.Now().Format("2006010215")))
+	}
+	if LoadConfig().ServerConfig.Debug {
+		fmt.Println(message)
+	}
+
+	errLogger.Println(message)
 }
 
 //var cfg, err = ini.InsensitiveLoad("filename")
