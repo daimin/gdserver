@@ -1,8 +1,9 @@
 // player
-package cg
+package game
 
 import (
 	"fmt"
+	"gdserver/sc"
 )
 
 type Player struct {
@@ -17,11 +18,11 @@ type Player struct {
 	Country string "country"
 	City    string "city"
 	Room    int    "room"
-	mq      chan *Message
+	mq      chan *sc.Message
 }
 
 func NewPlayer() *Player {
-	m := make(chan *Message, 1024)
+	m := make(chan *sc.Message, 1024)
 	player := &Player{"", 0, 0, 0, m}
 
 	go func(p *Player) {

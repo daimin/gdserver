@@ -1,5 +1,5 @@
 // center
-package cg
+package game
 
 import (
 	"encoding/json"
@@ -96,39 +96,4 @@ func (server *CenterServer) broadcast(params string) error {
 	}
 
 	return nil
-}
-
-func (server *CenterServer) Handle(method, params string) *ipc.Response {
-	switch method {
-	case "addplayer":
-		err := server.addPlayer(params)
-		if err != nil {
-			return &ipc.Response{Code: err.Error()}
-		}
-	case "removeplayer":
-		err := server.removePlayer(params)
-		if err != nil {
-			return &ipc.Response{Code: err.Error()}
-		}
-	case "listplayer":
-		players, err := server.listPlayer(params)
-		if err != nil {
-			return &ipc.Response{Code: err.Error()}
-		}
-		return &ipc.Response{"200", players}
-	case "broadcast":
-		err := server.broadcast(params)
-		if err != nil {
-			return &ipc.Response{Code: err.Error()}
-		}
-		return &ipc.Response{Code: "200"}
-	default:
-		return &ipc.Response{Code: "404", Body: method + ":" + params}
-	}
-
-	return &ipc.Response{Code: "200"}
-}
-
-func (server *CenterServer) Name() string {
-	return "CenterServer"
 }

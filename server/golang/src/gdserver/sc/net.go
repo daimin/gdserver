@@ -3,8 +3,8 @@ package sc
 
 import (
 	"bytes"
-	_ "bytes"
 	"encoding/binary"
+	"encoding/json"
 	"fmt"
 	"gdserver/comm"
 	"io"
@@ -12,8 +12,15 @@ import (
 	_ "os"
 )
 
-func Listen(host string, port int) {
-	listen, err := net.ListenTCP("tcp", &net.TCPAddr{net.ParseIP(host), port, ""})
+type Server struct {
+	clients []*Client
+	host    string
+	port    int
+	logger  *comm.LogHandler
+}
+
+func (this *Server) Listen() {
+	listen, err := net.ListenTCP("tcp", &net.TCPAddr{net.ParseIP(this.host), this.port, ""})
 	comm.CheckErr(err)
 	if err != nil {
 		fmt.Println("监听端口失败:", err.Error())
@@ -22,10 +29,10 @@ func Listen(host string, port int) {
 
 	fmt.Println("已初始化连接，等待客户端连接...")
 
-	NetServer(listen)
+	this.ServeForever(listen)
 }
 
-func read(conn *net.TCPConn, size int) ([]byte, bool) {
+func (this *Server) read(conn *net.TCPConn, size int) ([]byte, bool) {
 	buf := make([]byte, size)
 	len_, err := conn.Read(buf)
 	if err != nil {
@@ -45,8 +52,9 @@ func read(conn *net.TCPConn, size int) ([]byte, bool) {
 	return buf, true
 }
 
-func getHead(conn *net.TCPConn) (uint16, bool) {
-	readData, ret := read(conn, 2)
+//获取包头部
+func (this *Server) getHead(conn *net.TCPConn) (uint16, bool) {
+	readData, ret := this.read(conn, 2)
 	if ret == false {
 		return 0, ret
 	}
@@ -57,41 +65,45 @@ func getHead(conn *net.TCPConn) (uint16, bool) {
 	return type_, ret
 }
 
-func NetServer(listen *net.TCPListener) {
+func (this *Server) ServeForever(listen *net.TCPListener) {
 	defer listen.Close()
 	for {
 		conn, err := listen.AcceptTCP()
 		if err != nil {
-			comm.LogErr(fmt.Sprintf("接受客户端连接异常:%s", err.Error()))
+			this.logger.LogErr(fmt.Sprintf("接受客户端连接异常:%s", err.Error()))
 			continue
 		}
-		comm.LogMsg(fmt.Sprintf("客户端连接来自:", conn.RemoteAddr().String()))
+		this.logger.LogMsg(fmt.Sprintf("客户端连接来自:", conn.RemoteAddr().String()))
 		defer conn.Close()
-		go func() {
+		session := make(chan string, 0)
+		this.clients = append(this.clients, &Client{session, conn})
+		go func(sess chan string) {
 			for {
 
-				type_, ret1 := getHead(conn)
+				type_, ret1 := this.getHead(conn)
 				if !ret1 {
 					break
 				}
 
-				comm.LogMsg(fmt.Sprintf("Protocol type = %d", type_))
+				this.logger.LogMsg(fmt.Sprintf("Protocol type = %d", type_))
 
-				dataSize, ret2 := getHead(conn)
+				dataSize, ret2 := this.getHead(conn)
 				if !ret2 {
 					break
 				}
-				comm.LogMsg(fmt.Sprintf("Content size = %d", dataSize))
-				cont, ret3 := read(conn, int(dataSize))
+				this.logger.LogMsg(fmt.Sprintf("Content size = %d", dataSize))
+				cont, ret3 := this.read(conn, int(dataSize))
 				if !ret3 {
 					break
 				}
-				comm.LogMsg(fmt.Sprintf("Content = %s", cont))
+				this.logger.LogMsg(fmt.Sprintf("Content = %s", cont))
 				decryptCont, err := comm.GetAesEncrypt().Decrypt(string(cont))
 				comm.CheckErr(err)
 				fmt.Println(string(decryptCont))
+				msg, _ := json.Marshal(NewMessage(type_, dataSize, string(decryptCont)))
+				sess <- string(msg)
 			}
 
-		}()
+		}(session)
 	}
 }

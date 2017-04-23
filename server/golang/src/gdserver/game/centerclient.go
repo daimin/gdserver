@@ -1,5 +1,5 @@
 // centerclient
-package cg
+package game
 
 import (
 	"encoding/json"
@@ -9,7 +9,7 @@ import (
 )
 
 type CenterClient struct {
-	*sc.IpcClient
+	*sc.Client
 }
 
 func (client *CenterClient) AddPlayer(player *Player) error {

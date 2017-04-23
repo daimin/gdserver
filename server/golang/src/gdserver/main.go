@@ -4,7 +4,7 @@ package main
 import (
 	"fmt"
 	"gdserver/comm"
-	"gdserver/sc"
+	"gdserver/game"
 	"strings"
 )
 
@@ -31,7 +31,7 @@ func main() {
 
 	//	lastId := db.Insert("INSERT INTO userinfo(username, departname, created) values(?,?,?)", "min", "技术部", "2015-07-21")
 	//	fmt.Printf("last id = %d\n", lastId)
-	sc.Listen(host, port)
+	game.NewLoginSev(host, port).Listen()
 	//	enstr, _ := comm.GetAesEncrypt().Encrypt("1")
 	//	fmt.Println(enstr)
 	//	destr, _ := comm.GetAesEncrypt().Decrypt(enstr)

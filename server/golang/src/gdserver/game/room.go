@@ -1,5 +1,5 @@
 // room
-package cg
+package game
 
 import (
 	"fmt"

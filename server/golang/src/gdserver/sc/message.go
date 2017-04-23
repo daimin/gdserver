@@ -1,5 +1,5 @@
 // message
-package cg
+package sc
 
 import (
 	"fmt"
@@ -16,9 +16,9 @@ type Message struct {
 func NewMessage(tid uint16, args ...interface{}) *Message {
 	msg := &Message{}
 	msg.TID = tid
-	msg.Size = uint16(comm.IfReturn(len(args) > 0, args[0], nil))
-	msg.Content = uint16(comm.IfReturn(len(args) > 1, args[1], nil))
-	msg.Echo = uint16(comm.IfReturn(len(args) > 2, args[2], nil))
+	msg.Size = comm.IfReturn(len(args) > 0, args[0], nil).(uint16)
+	msg.Content = comm.IfReturn(len(args) > 1, args[1], nil).(string)
+	//	msg.Echo = comm.IfReturn(len(args) > 2, args[2], nil).(string)
 
 	return msg
 }
