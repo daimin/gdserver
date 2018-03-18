@@ -1,0 +1,1 @@
+sc = server core 这里是一些核心的东西

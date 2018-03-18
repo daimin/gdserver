@@ -5,7 +5,9 @@ from __future__ import absolute_import, division, print_function, \
 __author__ = 'daimin'
 
 import struct
-from gdserver import protocol, conf, message
+import protocol
+import conf
+import message
 import msgpack
 import random
 from Crypto.Cipher import AES

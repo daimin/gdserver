@@ -1,12 +1,16 @@
 # coding:utf-8
 from __future__ import absolute_import, division, print_function, \
     with_statement
-from gdserver import protocol
-from gdserver import user
-from gdserver import message as msg
-from gdserver import conf
+
 import json
 import time
+
+import message as msg
+
+import conf
+import protocol
+from gdserver import user
+
 
 class Handler(object):
     _instances = {}
